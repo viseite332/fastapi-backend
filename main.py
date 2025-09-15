@@ -3,24 +3,37 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
 import os
-from urllib.parse import urlparse
+from dotenv import load_dotenv
+
+load_dotenv()  # Leser .env fil
 
 app = FastAPI()
 
 # CORS – lar frontend kommunisere med API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Hent Railway DATABASE_URL fra miljøvariabler
-DATABASE_URL = os.getenv("DATABASE_URL")
+# Les verdiene fra .env
+DBNAME = os.getenv("DBNAME")
+USER = os.getenv("USER")
+PASSWORD = os.getenv("PASSWORD")
+HOST = os.getenv("HOST")
+PORT = os.getenv("PORT")
 
 def get_connection():
-    return psycopg2.connect(DATABASE_URL)
+    conn = psycopg2.connect(
+        dbname=DBNAME,
+        user=USER,
+        password=PASSWORD,
+        host=HOST,
+        port=PORT
+    )
+    return conn
 
 # Skjema for data
 class UserData(BaseModel):
